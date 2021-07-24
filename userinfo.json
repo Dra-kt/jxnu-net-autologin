@@ -1,0 +1,10 @@
+{
+  "username": "1234",
+  "domain": "ctcc",
+  "password": "4321",
+  "comment": {
+    "?username": "在username属性中填写用户名",
+    "?domain": "在domain属性中填写网络运营商代码  联通cucc  移动cmcc  电信ctcc  校园宽带jxnu",
+    "password": "在password属性中填写登陆密码"
+  }
+}
