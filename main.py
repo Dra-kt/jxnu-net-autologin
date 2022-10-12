@@ -9,7 +9,7 @@ from encryption.srun_xencode import *
 header = {
 	'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36'
 }
-init_url="http://172.16.8.6"
+init_url="http://172.16.8.6/srun_portal_pc?ac_id=1&theme=basic2"
 get_challenge_api="http://172.16.8.6/cgi-bin/get_challenge"
 
 srun_portal_api="http://172.16.8.6/cgi-bin/srun_portal"
