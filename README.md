@@ -1,17 +1,39 @@
-### 使用方法
+适用于**江西师范大学**校园网的登录程序
 
-1. 将账号密码与运营商信息填入`username.json`配置文件中
-2. 启动程序
+## 使用说明
 
-### Windows计划任务事件
+### 首次使用
 
-可以利用Windows计划任务自动化登陆，所使用的计划触发器规则：
+运行程序时，若配置文件不存在，程序会在所在目录下生成`userinfo.json`文件，用于存储配置信息，其默认结构如下
 
+```json
+{
+    "username": "登录用户名",
+    "password": "登录密码",
+    "domain": "登录域"
+}
 ```
-<QueryList>
- <Query Id="0" Path="Microsoft-Windows-WLAN-AutoConfig/Operational">
-  <Select Path="Microsoft-Windows-WLAN-AutoConfig/Operational">*[System[Provider[@Name='Microsoft-Windows-WLAN-AutoConfig']and(EventID=8001)]][EventData[Data[@Name='SSID']='jxnu_stu']]</Select>
- </Query>
-</QueryList>
-```
+
+需要填写其中的`username`，`password`和`domain`字段，其中`domain`字段可为以下四种，根据账户实际情况填写：
+
+- `cucc`：中国联通
+- `cmcc`：中国移动
+- `ctcc`：中国电信
+- `jxnu`：校园宽带
+
+### 正常使用
+
+正确填写配置文件后直接运行程序即可
+
+### 命令行操作
+
+- `-h`：显示命令行参数帮助
+- `-c`,`--config`：配置文件路径，默认路径为`./userinfo.json`
+- `-u`,`--username`：覆盖配置文件中的用户名
+- `-p`,`--password`：覆盖配置文件中的密码
+- `-d`,`--domain`：覆盖配置文件中的登录域
+- `-m`,`--mode`：运行模式，默认为`login`
+    - `login`：常规登录流程
+    - `logout`：注销账户（**只能注销经由此程序登录的账户**）
+    - `relogin`：执行注销操作后再执行登录操作（两次操作间有3秒延迟）
 
