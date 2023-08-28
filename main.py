@@ -2,22 +2,29 @@ import requests
 import time
 import re
 import json
+import os.path as ospath
+import argparse
 from encryption.srun_md5 import *
 from encryption.srun_sha1 import *
 from encryption.srun_base64 import *
 from encryption.srun_xencode import *
 
 header = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
 }
-init_url = "http://172.16.8.6/srun_portal_pc?ac_id=1&theme=basic2"
-get_challenge_api = "http://172.16.8.6/cgi-bin/get_challenge"
+init_url = "http://172.16.8.8/srun_portal_pc?ac_id=1&theme=pro"
+get_challenge_api = "http://172.16.8.8/cgi-bin/get_challenge"
 
-srun_portal_api = "http://172.16.8.6/cgi-bin/srun_portal"
+srun_portal_api = "http://172.16.8.8/cgi-bin/srun_portal"
 n = '200'
 type = '1'
 ac_id = '1'
 enc = "srun_bx1"
+config = {
+    'username': '',
+    'password': '',
+    'domain': ''
+}
 
 
 def get_chksum():
@@ -48,8 +55,33 @@ def init_getip():
     global ip
     init_res = requests.get(init_url, headers=header)
     print("初始化获取ip")
-    ip = re.search('id="user_ip" value="(.*?)"', init_res.text).group(1)
+    ip = re.search('ip +: "(.*?)",', init_res.text).group(1)
     print("ip:" + ip)
+
+
+# 写入配置文件
+def record_config(path: str):
+    global config
+    with open(path, 'w', encoding='utf8') as conf:
+        json.dump(config, conf, indent=2)
+
+
+# 读取配置文件
+def init_getconf(path: str) -> bool:
+    global config, username, password, args
+    # 配置文件不存在时自动生成配置文件
+    if not ospath.isfile(path):
+        record_config(path)
+        print("已生成配置文件")
+        return False
+    with open(path, 'r', encoding='utf8') as conf:
+        config = json.load(conf)
+
+    # 命令行覆盖数据
+    username = (config['username'] if args.username is None else args.username) + '@' + (
+        config['domain'] if args.domain is None else args.domain)
+    password = config['password'] if args.password is None else args.password
+    return True
 
 
 def get_token():
@@ -111,13 +143,34 @@ def logout():
     print(srun_portal_res.text)
 
 
+def parseArg():
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", type=str, default="./userinfo.json", help="配置文件路径")
+    parser.add_argument("-m", "--mode", type=str, default="login", help="运行模式")
+    parser.add_argument("-u", "--username", type=str, help="用户名")
+    parser.add_argument("-p", "--password", type=str, help="密码")
+    parser.add_argument("-d", "--domain", type=str, help="登录域")
+    args = parser.parse_args()
+
+
 if __name__ == '__main__':
-    global username, password
-    with open('./userinfo.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-    username = json_data['username'] + '@' + json_data['domain']
-    password = json_data['password']
+    global args
+    parseArg()
+    init_getconf(args.config)
     init_getip()
-    get_token()
-    do_complex_work()
-    login()
+    if args.mode == "login":
+        get_token()
+        do_complex_work()
+        login()
+    elif args.mode == 'logout':
+        logout()
+    elif args.mode == 'relogin':
+        logout()
+        time.sleep(3)
+        get_token()
+        do_complex_work()
+        login()
+    else:
+        raise Exception('不支持的运行模式')
+    record_config(args.config)
