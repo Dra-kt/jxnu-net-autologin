@@ -1,3 +1,5 @@
+import sys
+
 import requests
 import time
 import re
@@ -157,7 +159,8 @@ def parseArg():
 if __name__ == '__main__':
     global args
     parseArg()
-    init_getconf(args.config)
+    if init_getconf(args.config) is False:
+        sys.exit(0)
     init_getip()
     if args.mode == "login":
         get_token()
