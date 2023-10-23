@@ -1,3 +1,4 @@
+import io
 import sys
 
 import requests
@@ -28,6 +29,14 @@ config = {
     'domain': ''
 }
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
 
 def get_chksum():
     chkstr = token + username
@@ -56,9 +65,9 @@ def get_info():
 def init_getip():
     global ip
     init_res = requests.get(init_url, headers=header)
-    print("初始化获取ip")
+    logging.info("初始化获取ip")
     ip = re.search('ip +: "(.*?)",', init_res.text).group(1)
-    print("ip:" + ip)
+    logging.info("ip:" + ip)
 
 
 # 写入配置文件
@@ -74,7 +83,7 @@ def init_getconf(path: str) -> bool:
     # 配置文件不存在时自动生成配置文件
     if not ospath.isfile(path):
         record_config(path)
-        print("已生成配置文件")
+        logging.info("已生成配置文件")
         return False
     with open(path, 'r', encoding='utf8') as conf:
         config = json.load(conf)
@@ -87,7 +96,7 @@ def init_getconf(path: str) -> bool:
 
 
 def get_token():
-    # print("获取token")
+    logging.info("获取token")
     global token
     get_challenge_params = {
         "callback": "jQuery112404953340710317169_" + str(int(time.time() * 1000)),
@@ -97,8 +106,8 @@ def get_token():
     }
     get_challenge_res = requests.get(get_challenge_api, params=get_challenge_params, headers=header)
     token = re.search('"challenge":"(.*?)"', get_challenge_res.text).group(1)
-    print(get_challenge_res.text)
-    print("token为:" + token)
+    logging.info(get_challenge_res.text)
+    logging.info("token为:" + token)
 
 
 def do_complex_work():
@@ -107,7 +116,7 @@ def do_complex_work():
     i = "{SRBX1}" + get_base64(get_xencode(i, token))
     hmd5 = get_md5(password, token)
     chksum = get_sha1(get_chksum())
-    print("所有加密工作已完成")
+    logging.info("所有加密工作已完成")
 
 
 def login():
@@ -129,7 +138,8 @@ def login():
     }
     # print(srun_portal_params)
     srun_portal_res = requests.get(srun_portal_api, params=srun_portal_params, headers=header)
-    print(srun_portal_res.text)
+    logging.info(srun_portal_res.text)
+    logging.info("登录成功")
 
 
 def logout():
@@ -142,7 +152,16 @@ def logout():
         '_': int(time.time() * 1000)
     }
     srun_portal_res = requests.get(srun_portal_api, params=srun_portal_params, headers=header)
-    print(srun_portal_res.text)
+    logging.info(srun_portal_res.text)
+    logging.info("注销成功")
+
+
+def redirectOut():
+    # 创建空流接受输出
+    if sys.stderr is None:
+        sys.stderr = io.StringIO()
+    if sys.stdout is None:
+        sys.stdout = io.StringIO()
 
 
 def parseArg():
@@ -154,14 +173,20 @@ def parseArg():
     parser.add_argument("-p", "--password", type=str, help="密码")
     parser.add_argument("-d", "--domain", type=str, help="登录域")
     args = parser.parse_args()
+    logging.info(args)
 
 
-if __name__ == '__main__':
-    global args
+def init():
+    redirectOut()
     parseArg()
     if init_getconf(args.config) is False:
         sys.exit(0)
     init_getip()
+
+
+if __name__ == '__main__':
+    global args
+    init()
     if args.mode == "login":
         get_token()
         do_complex_work()

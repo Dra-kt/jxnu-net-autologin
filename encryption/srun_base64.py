@@ -1,3 +1,5 @@
+import logging
+
 _PADCHAR = "="
 _ALPHA = "LVoJPiCN2R8G90yg+hmFHuacZ1OWMnrsSTXkYpUq/3dlbfKwv6xztjI7DeBE45QA"
 
@@ -5,7 +7,7 @@ _ALPHA = "LVoJPiCN2R8G90yg+hmFHuacZ1OWMnrsSTXkYpUq/3dlbfKwv6xztjI7DeBE45QA"
 def _getbyte(s, i):
     x = ord(s[i])
     if x > 255:
-        print("INVALID_CHARACTER_ERR: DOM Exception 5")
+        logging.error("INVALID_CHARACTER_ERR: DOM Exception 5")
         exit(0)
     return x
 
