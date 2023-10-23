@@ -168,7 +168,7 @@ def parseArg():
     global args
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, default="./userinfo.json", help="配置文件路径")
-    parser.add_argument("-m", "--mode", type=str, default="login", help="运行模式")
+    parser.add_argument("-m", "--mode", type=str, default="login", help="运行模式（login, logout）")
     parser.add_argument("-u", "--username", type=str, help="用户名")
     parser.add_argument("-p", "--password", type=str, help="密码")
     parser.add_argument("-d", "--domain", type=str, help="登录域")
@@ -193,12 +193,6 @@ if __name__ == '__main__':
         login()
     elif args.mode == 'logout':
         logout()
-    elif args.mode == 'relogin':
-        logout()
-        time.sleep(3)
-        get_token()
-        do_complex_work()
-        login()
     else:
         raise Exception('不支持的运行模式')
     record_config(args.config)
