@@ -15,10 +15,12 @@ from encryption.srun_xencode import *
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
 }
+
+# 请求地址
 init_url = "http://172.16.8.8/srun_portal_pc?ac_id=1&theme=pro"
 get_challenge_api = "http://172.16.8.8/cgi-bin/get_challenge"
-
 srun_portal_api = "http://172.16.8.8/cgi-bin/srun_portal"
+
 n = '200'
 type = '1'
 ac_id = '1'
