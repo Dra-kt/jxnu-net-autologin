@@ -2,6 +2,8 @@
 
 即深澜科技`v2.00`认证系统，修改`main.py`中的请求地址即可切换兼容，但此项目不保证兼容性
 
+算法原作者：[huxiaofan1223/jxnu_srun](https://github.com/huxiaofan1223/jxnu_srun)
+
 ## 使用说明
 
 ### 首次使用
