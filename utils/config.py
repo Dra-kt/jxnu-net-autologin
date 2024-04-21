@@ -1,10 +1,18 @@
 import json
-import os
+import os, sys
 import os.path as ospath
 
-os.chdir(os.path.join(os.path.dirname(__file__), ".."))
+global file_path
+config_name = "userinfo.json"
+if getattr(sys, 'frozen', False):
+    file_path = ospath.join(os.path.dirname(sys.executable), config_name)
+else:
+    file_path = ospath.join(ospath.dirname(__file__), '..', config_name)
 
-file_path = "userinfo.json"
+
+def change_config_path(path: str):
+    global file_path
+    file_path = path
 
 
 class Config:
